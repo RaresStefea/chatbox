@@ -24,8 +24,10 @@ def update(db: Session, user_id: int, data: dict):
     user = get_by_id(db, user_id)
     if not user:
         return None
+    valid_columns = {col.key for col in UserRecord.__table__.columns}
     for key, value in data.items():
-        setattr(user, key, value)
+        if key in valid_columns:
+            setattr(user, key, value)
     db.commit()
     db.refresh(user)
     return user
