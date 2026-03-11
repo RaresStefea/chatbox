@@ -1,9 +1,8 @@
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter, Depends, HTTPException
 from db.models import UserRecord
 from db.database import get_db
 from pydantic import BaseModel, Field, EmailStr
-from utils import security
+from utils import security, jwt
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -37,6 +36,11 @@ def login():
 @router.post("/signup", response_model=TokenResponse)
 def signup(user_create: UserCreate, db=Depends(get_db)):
 
+    if db.query(UserRecord).filter(UserRecord.email == user_create.email).first():
+        raise HTTPException(
+            status_code=409, detail="A user with this email already exists"
+        )
+
     hashed_pass = security.hash_password(user_create.password_hash)
 
     new_user = UserRecord(
@@ -57,11 +61,7 @@ def signup(user_create: UserCreate, db=Depends(get_db)):
         avatar_url=new_user.avatar_url or "",
         password_hash=new_user.password_hash or "",
     )
-    # TODO:
-    # - read about JWT tokens
-    # - implement create_access_token
-    access_token = "test"  # create_access_token(data=user) JWT
 
-    # TODO: return nice error if user already exists
+    access_token = jwt.create_access_token(data=user)
 
     return TokenResponse(user=user, access_token=access_token)
