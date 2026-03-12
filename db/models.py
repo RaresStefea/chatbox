@@ -19,3 +19,16 @@ class UserRecord(Base):
     avatar_url = Column(String, nullable=True)
     password_hash = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class FileRecord(Base):
+    __tablename__ = "files"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
+    original_name = Column(String, nullable=False)
+    stored_name = Column(String, nullable=False)
+    path = Column(String, nullable=False)
+    content_type = Column(String, nullable=True)
+    size = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
