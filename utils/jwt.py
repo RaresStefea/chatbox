@@ -4,7 +4,8 @@ from jose import jwt
 from dotenv import load_dotenv
 
 # TIP: load_env should always run before trying to access the env vars so it gets injected and the os can retrieve it
-load_dotenv()
+if os.getenv("ENV") != "production":
+    load_dotenv()
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
