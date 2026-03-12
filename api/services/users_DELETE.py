@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from api.repositories import users as users_repo
+from api.repositories import users_DELETE as users_repo
 
 # Aici se pune si logica de encryptare a parolei/validare
 

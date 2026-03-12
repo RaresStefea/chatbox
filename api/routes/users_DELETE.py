@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Body, Depends
 from sqlalchemy.orm import Session
 
-from api.services import users as users_service
+from api.services import users_DELETE as users_service
 from db.database import get_db
 
 router = APIRouter(prefix="/users", tags=["users"])

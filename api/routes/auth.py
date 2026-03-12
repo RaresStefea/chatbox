@@ -1,67 +1,55 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from db.models import UserRecord
 from db.database import get_db
-from pydantic import BaseModel, Field, EmailStr
+from api.models import LoginRequest, SignupRequest, TokenResponse, UserResponse
 from utils import security, jwt
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    name: str = Field(min_length=5, max_length=20)
-    avatar_url: str = Field(default="")
-    password_hash: str = Field(min_length=8, max_length=128)
+@router.post(
+    "/signup", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+)
+def signup(body: SignupRequest, db: Session = Depends(get_db)):
 
-
-class User(BaseModel):
-    id: int
-    email: EmailStr
-    name: str
-    avatar_url: str
-    password_hash: str
-
-
-class TokenResponse(BaseModel):
-    user: User
-    access_token: str
-    token_type: str = "bearer"
-
-
-@router.post("/login")
-def login():
-    pass
-
-
-@router.post("/signup", response_model=TokenResponse)
-def signup(user_create: UserCreate, db=Depends(get_db)):
-
-    if db.query(UserRecord).filter(UserRecord.email == user_create.email).first():
+    if db.query(UserRecord).filter(UserRecord.email == body.email).first():
         raise HTTPException(
-            status_code=409, detail="A user with this email already exists"
+            status_code=status.HTTP_409_CONFLICT, detail="Email already registered!"
         )
 
-    hashed_pass = security.hash_password(user_create.password_hash)
-
-    new_user = UserRecord(
-        email=user_create.email,
-        name=user_create.name,
-        avatar_url=user_create.avatar_url,
-        password_hash=hashed_pass,
+    user = UserRecord(
+        email=body.email,
+        name=body.name,
+        password_hash=security.hash_password(body.password),
     )
 
-    db.add(new_user)
+    db.add(user)
     db.commit()
-    db.refresh(new_user)
+    db.refresh(user)
 
-    user = User(
-        id=new_user.id,
-        email=new_user.email,
-        name=new_user.name,
-        avatar_url=new_user.avatar_url or "",
-        password_hash=new_user.password_hash or "",
+    return TokenResponse(
+        access_token=jwt.create_access_token(user.id),
+        user=UserResponse.model_validate(user),
     )
 
-    access_token = jwt.create_access_token(data=user)
 
-    return TokenResponse(user=user, access_token=access_token)
+@router.post("/login", response_model=TokenResponse)
+def login(body: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(UserRecord).filter(UserRecord.email == body.email).first()
+
+    if (
+        not user
+        or not user.password_hash
+        or not security.verify_password(body.password, user.password_hash)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password!",
+        )
+
+    return TokenResponse(
+        access_token=jwt.create_access_token(user.id),
+        user=UserResponse.model_validate(user),
+    )

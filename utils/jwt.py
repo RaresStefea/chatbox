@@ -16,7 +16,18 @@ ALGORITHM = "HS256"
 EXPIRE_MINUTES = 60 * 24
 
 
-def create_access_token(data) -> str:
-    payload = data.model_dump()
-    payload["exp"] = datetime.now(timezone.utc) + timedelta(minutes=EXPIRE_MINUTES)
+def create_access_token(user_id: int) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=EXPIRE_MINUTES)
+    payload = {"sub": str(user_id), "exp": int(expire.timestamp())}
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+        return payload
+    except (jwt.JWTError, ValueError):
+        return None
