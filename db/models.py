@@ -1,6 +1,7 @@
 from sqlalchemy import (
     Column,
     DateTime,
+    ForeignKey,
     Integer,
     String,
     func,
@@ -25,7 +26,7 @@ class FileRecord(Base):
     __tablename__ = "files"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     original_name = Column(String, nullable=False)
     stored_name = Column(String, nullable=False)
     path = Column(String, nullable=False)

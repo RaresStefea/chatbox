@@ -5,11 +5,9 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from db.database import get_db
-from db.models import FileRecord, UserRecord
+from db.models import UserRecord
 from utils.get_user import get_current_user
-from utils import file_operations
-
-UPLOAD_DIR = Path("files")
+from api.services import files as files_service
 
 router = APIRouter(prefix="/files", tags=["files"])
 
@@ -27,22 +25,13 @@ async def upload_file(
         )
 
     content = await file.read()
-
-    file_info = file_operations.save_upload_file(
-        file_content=content, filename=file.filename, user_id=current_user.id
-    )
-
-    record = FileRecord(
+    record = files_service.create_file_record(
+        db,
         user_id=current_user.id,
-        original_name=file_info["original_name"],
-        stored_name=file_info["random_name"],
-        path=file_info["path"],
-        content_type=file.content_type or "application/octet-stream",
-        size=len(content),
+        filename=file.filename,
+        content=content,
+        content_type=file.content_type,
     )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
 
     return {
         "id": record.id,
@@ -58,7 +47,7 @@ def list_files(
     current_user: UserRecord = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    records = db.query(FileRecord).filter(FileRecord.user_id == current_user.id).all()
+    records = files_service.list_files(db, user_id=current_user.id)
     return [
         {
             "id": r.id,
@@ -77,16 +66,7 @@ def get_file(
     current_user: UserRecord = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    record = (
-        db.query(FileRecord)
-        .filter(FileRecord.id == file_id, FileRecord.user_id == current_user.id)
-        .first()
-    )
-
-    if not record:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
-        )
+    record = files_service.get_file(db, file_id=file_id, user_id=current_user.id)
 
     return {
         "id": record.id,
@@ -103,20 +83,7 @@ def delete_file(
     current_user: UserRecord = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    record = (
-        db.query(FileRecord)
-        .filter(FileRecord.id == file_id, FileRecord.user_id == current_user.id)
-        .first()
-    )
-
-    if not record:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
-        )
-
-    Path(record.path).unlink(missing_ok=True)
-    db.delete(record)
-    db.commit()
+    files_service.delete_file(db, file_id=file_id, user_id=current_user.id)
 
 
 @router.get("/{file_id}/content")
@@ -125,16 +92,7 @@ def get_file_content(
     current_user: UserRecord = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    record = (
-        db.query(FileRecord)
-        .filter(FileRecord.id == file_id, FileRecord.user_id == current_user.id)
-        .first()
-    )
-
-    if not record:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
-        )
+    record = files_service.get_file(db, file_id=file_id, user_id=current_user.id)
 
     file_path = Path(record.path)
     if not file_path.exists():
