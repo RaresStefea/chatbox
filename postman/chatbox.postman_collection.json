@@ -183,6 +183,13 @@
           "request": {
             "method": "GET",
             "header": [],
+            "url": {
+              "raw": "http://0.0.0.0:8000/healthz",
+              "protocol": "http",
+              "host": ["0", "0", "0", "0"],
+              "port": "8000",
+              "path": ["healthz"]
+            },
             "description": "This route **/healthz** is meant for checking the status of our API in a **Contarization** context."
           },
           "response": []
@@ -192,7 +199,14 @@
     }
   ],
   "auth": {
-    "type": "bearer"
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "",
+        "type": "string"
+      }
+    ]
   },
   "event": [
     {
