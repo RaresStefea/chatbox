@@ -74,18 +74,23 @@ def list_files(db: Session, user_id: int) -> List[FileRecord]:
     return db.query(FileRecord).filter(FileRecord.user_id == user_id).all()
 
 
-def search_files(db: Session, user_id: int, query: str):
+def search_files(
+    db: Session, user_id: int, query: str, limit: int = 10, offset: int = 0
+):
     ts_query = func.websearch_to_tsquery("english", query)
-    rank = func.ts_rank(FileContentRecord.content_tsv, ts_query)
+
+    rank = (func.ts_rank(FileContentRecord.content_tsv, ts_query) * 100).label("rank")
 
     return (
-        db.query(FileRecord)
+        db.query(FileRecord, rank)
         .join(FileContentRecord, FileContentRecord.file_id == FileRecord.id)
         .filter(
             FileRecord.user_id == user_id,
             FileContentRecord.content_tsv.op("@@")(ts_query),
         )
         .order_by(desc(rank))
+        .limit(limit)
+        .offset(offset)
         .all()
     )
 

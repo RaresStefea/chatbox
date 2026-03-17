@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "faee1fad-fa27-47c3-8d71-ce818ed98c09",
+    "_postman_id": "4bb59754-5ba8-4712-94e7-91ae8007f248",
     "name": "chatbox",
     "description": "# Collection of API endpoints and methods meant for testing functionality of **chatbox**:\n- **file uploading**\n- **authentification**\n- **core**",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "53248224",
-    "_collection_link": "https://go.postman.co/collection/53248224-faee1fad-fa27-47c3-8d71-ce818ed98c09?source=collection_link"
+    "_exporter_id": "53234033",
+    "_collection_link": "https://go.postman.co/collection/53234033-4bb59754-5ba8-4712-94e7-91ae8007f248?source=collection_link"
   },
   "item": [
     {
@@ -30,9 +30,16 @@
             "url": {
               "raw": "http://0.0.0.0:8000/files",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["files"]
+              "path": [
+                "files"
+              ]
             },
             "description": "Route meant for adding files to a user.\n\nUser must be **authenticated**, otherwise upload will fail.\n\nBody needs:\n\n- file to upload"
           },
@@ -46,9 +53,16 @@
             "url": {
               "raw": "http://0.0.0.0:8000/files",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["files"]
+              "path": [
+                "files"
+              ]
             },
             "description": "Returns the list of files added by an authentificated user."
           },
@@ -62,9 +76,17 @@
             "url": {
               "raw": "http://0.0.0.0:8000/files/:file_id",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["files", ":file_id"],
+              "path": [
+                "files",
+                ":file_id"
+              ],
               "variable": [
                 {
                   "key": "file_id",
@@ -85,9 +107,17 @@
             "url": {
               "raw": "http://0.0.0.0:8000/files/:file_id",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["files", ":file_id"],
+              "path": [
+                "files",
+                ":file_id"
+              ],
               "variable": [
                 {
                   "key": "file_id",
@@ -106,15 +136,34 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://0.0.0.0:8000/files/search?q={{value}}",
+              "raw": "http://0.0.0.0:8000/files/search?q={{value}}&limit={{limit}}&offset={{offset}}",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["files", "search"],
+              "path": [
+                "files",
+                "search"
+              ],
               "query": [
                 {
                   "key": "q",
-                  "value": "{{value}}"
+                  "value": "{{value}}",
+                  "description": "Search term"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "offset",
+                  "value": "{{offset}}",
+                  "description": "Offset of page"
                 }
               ]
             },
@@ -135,7 +184,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\" : \"example@gmail.com\",\n    \"username\" : \"example\",\n    \"phone\" : \"0700000\",\n    \"avatar_url\" : \"some url\",\n    \"password\" : \"password\"  \n}",
+              "raw": "{\n    \"email\" : \"exampl21e@gmail.com\",\n    \"username\" : \"example\",\n    \"phone\" : \"0700000\",\n    \"avatar_url\" : \"some url\",\n    \"password\" : \"password\"  \n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -145,9 +194,17 @@
             "url": {
               "raw": "http://0.0.0.0:8000/auth/signup",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["auth", "signup"]
+              "path": [
+                "auth",
+                "signup"
+              ]
             },
             "description": "# Endpoint for sign up\n\nFields:\n\n- **email**: must be **unique**, not **optional**\n    \n- **name**: **optional**\n    \n- **phone**:**optional**\n    \n- **avatar_url**: **optional**\n    \n- **password**: not **optional**\n\nOn **success** returns **JWT bearer token**.\n\nOn **fail** returns corresponding error message."
           },
@@ -170,9 +227,17 @@
             "url": {
               "raw": "http://0.0.0.0:8000/auth/login",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["auth", "login"]
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "description": "# Endpoint for sign up\n\nFields:\n\n- **email** - must be an already existing email\n- **password** - must match registered email password\n\nOn **success** returns **JWT bearer token**.\nOn **failure** returns specific errors."
           },
@@ -192,9 +257,16 @@
             "url": {
               "raw": "http://0.0.0.0:8000/",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": [""]
+              "path": [
+                ""
+              ]
             },
             "description": "This is the root document meant for testing status of user.\n\nOn **Successful** user authorization it returns:\n\n- Response 201\n    \n- user.email\n    \n\nOn **Unsuccessful** user authorization it returns the specific error response."
           },
@@ -208,9 +280,16 @@
             "url": {
               "raw": "http://0.0.0.0:8000/healthz",
               "protocol": "http",
-              "host": ["0", "0", "0", "0"],
+              "host": [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
               "port": "8000",
-              "path": ["healthz"]
+              "path": [
+                "healthz"
+              ]
             },
             "description": "This route **/healthz** is meant for checking the status of our API in a **Contarization** context."
           },
@@ -225,7 +304,7 @@
     "bearer": [
       {
         "key": "token",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzczNzcyNTAxfQ.sTxSSG_z9LcVB2kPrLLASdv56OpqgV8ECt-IFAFRIgg",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzczODE3OTgzfQ.VrmY4ef37mLrCrqKPS3tVKG0WZm42KpfrHOgp6fZlNA",
         "type": "string"
       }
     ]
@@ -237,7 +316,9 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     },
     {
@@ -246,7 +327,9 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     }
   ]

@@ -63,20 +63,34 @@ def list_files(
 @router.get("/search")
 def search_files(
     q: str,
+    limit: int = 10,
+    offset: int = 0,
     current_user: UserRecord = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    records = files_service.search_files(db, user_id=current_user.id, query=q)
-    return [
-        {
-            "id": r.id,
-            "filename": r.original_name,
-            "content_type": r.content_type,
-            "size": r.size,
-            "created_at": r.created_at,
-        }
-        for r in records
-    ]
+    results = files_service.search_files(
+        db=db,
+        user_id=current_user.id,
+        query=q,
+        limit=limit,
+        offset=offset,
+    )
+
+    return {
+        "offset": offset,
+        "limit": limit,
+        "results": [
+            {
+                "id": file.id,
+                "filename": file.original_name,
+                "content_type": file.content_type,
+                "size": file.size,
+                "created_at": file.created_at,
+                "rank": round(rank, 2),
+            }
+            for file, rank in results
+        ],
+    }
 
 
 @router.get("/{file_id}")
