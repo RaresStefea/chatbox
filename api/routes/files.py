@@ -60,6 +60,25 @@ def list_files(
     ]
 
 
+@router.get("/search")
+def search_files(
+    q: str,
+    current_user: UserRecord = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    records = files_service.search_files(db, user_id=current_user.id, query=q)
+    return [
+        {
+            "id": r.id,
+            "filename": r.original_name,
+            "content_type": r.content_type,
+            "size": r.size,
+            "created_at": r.created_at,
+        }
+        for r in records
+    ]
+
+
 @router.get("/{file_id}")
 def get_file(
     file_id: int,
