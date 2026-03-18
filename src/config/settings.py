@@ -10,6 +10,8 @@ class Settings(BaseSettings):
 
     pg_database_url: Optional[str] = None
 
+    voyage_key: Optional[str] = None
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
